@@ -12,15 +12,24 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { fetchClient } from '../lib/fetchClient';
 import { mergeProducts } from '../lib/mergeProducts';
+import { delayWithAbort, normalizeDelayConfig, defaultDelayConfig } from '../lib/delay';
 
 const PRODUCTS_PER_PAGE = 16;
 
 /**
  * Custom hook for progressive product loading
  * @param {number} initialPage - Starting page (1-based)
+ * @param {Object} delayConfig - Optional delay configuration for demo
+ * @param {boolean} delayConfig.enabled - Master toggle for delays
+ * @param {number} delayConfig.duration - Delay duration in milliseconds
+ * @param {boolean} delayConfig.phase1 - Enable delay for Phase 1
+ * @param {boolean} delayConfig.phase2 - Enable delay for Phase 2
  * @returns {Object} State and navigation functions
  */
-export function useProgressiveProducts(initialPage = 1) {
+export function useProgressiveProducts(initialPage = 1, delayConfig = {}) {
+  // Normalize delay config with defaults
+  const config = normalizeDelayConfig(delayConfig);
+  
   // ============ STATE (triggers re-render when changed) ============
   const [products, setProducts] = useState([]);
   const [isLoadingPhase1, setIsLoadingPhase1] = useState(true);
@@ -37,6 +46,11 @@ export function useProgressiveProducts(initialPage = 1) {
   const abortControllerRef = useRef(null);
   // phase2AbortControllerRef: separate controller for Phase 2
   const phase2AbortControllerRef = useRef(null);
+  // delayConfigRef: allows updating delay config without re-render
+  const delayConfigRef = useRef(config);
+  
+  // Keep delayConfigRef in sync with latest config
+  delayConfigRef.current = config;
   
   // ============ HELPER: Cancel current in-flight requests ============
   const cancelCurrentRequests = useCallback(() => {
@@ -81,6 +95,11 @@ export function useProgressiveProducts(initialPage = 1) {
           select: 'title,price,thumbnail',  // Only these 3 fields!
         },
       });
+      
+      // Artificial delay for Phase 1 (demo only)
+      if (delayConfigRef.current.enabled && delayConfigRef.current.phase1) {
+        await delayWithAbort(delayConfigRef.current.duration, controller.signal);
+      }
       
       // 6. GUARD: Check if this response is still relevant (user hasn't navigated away)
       if (myVersion !== pageVersionRef.current) {
@@ -132,6 +151,11 @@ export function useProgressiveProducts(initialPage = 1) {
         },
       });
       
+      // Artificial delay for Phase 2 (demo only)
+      if (delayConfigRef.current.enabled && delayConfigRef.current.phase2) {
+        await delayWithAbort(delayConfigRef.current.duration, controller.signal);
+      }
+      
       // GUARD: Check version BEFORE merging (user may have navigated away)
       if (version !== pageVersionRef.current) {
         console.log('[Phase 2] Stale response discarded', { version, current: pageVersionRef.current });
@@ -181,6 +205,11 @@ export function useProgressiveProducts(initialPage = 1) {
     goToPage(currentPage - 1);
   }, [currentPage, goToPage]);
   
+  // Refresh current page (re-fetch with current delay settings)
+  const refresh = useCallback(() => {
+    loadPage(currentPage);
+  }, [currentPage, loadPage]);
+  
   // ============ EFFECT: Load page when currentPage changes ============
   useEffect(() => {
     loadPage(currentPage);
@@ -208,6 +237,7 @@ export function useProgressiveProducts(initialPage = 1) {
     goToPage,
     nextPage,
     prevPage,
+    refresh,
     // Computed helpers for UI
     isLoading: isLoadingPhase1 || isLoadingPhase2,
     hasError: errorPhase1 || errorPhase2,
