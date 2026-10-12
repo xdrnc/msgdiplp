@@ -212,8 +212,10 @@ export function ProductCard({ product, isSkeleton = false }) {
         isEnriched && description ? (
           <p className="product-card__description">{description}</p>
         ) : (
-          // Reserve space for description even when not enriched or no description
-          <div className="product-card__description-placeholder" />
+          // Phase 2 skeleton: use animated skeleton (same as Phase 1) for reusability
+          <div className="product-card__description">
+            <span className="skeleton-text skeleton-description" />
+          </div>
         )
       }
     />
