@@ -112,6 +112,7 @@ export function ProductCard({ product, isSkeleton = false }) {
             </>
           ) : (
             // Not enriched yet: show skeleton placeholders for Phase 2 fields
+            // Description skeleton removed to match Phase 1 skeleton height
             <>
               <div className="product-card__detail product-card__detail--skeleton">
                 <span className="skeleton skeleton--text" style={{ width: '60%' }}></span>
@@ -124,11 +125,6 @@ export function ProductCard({ product, isSkeleton = false }) {
               </div>
               <div className="product-card__detail product-card__detail--skeleton">
                 <span className="skeleton skeleton--text" style={{ width: '80%' }}></span>
-              </div>
-              <div className="product-card__description product-card__description--skeleton">
-                <div className="skeleton skeleton--text" style={{ width: '100%' }}></div>
-                <div className="skeleton skeleton--text" style={{ width: '80%' }}></div>
-                <div className="skeleton skeleton--text" style={{ width: '60%' }}></div>
               </div>
             </>
           )}
