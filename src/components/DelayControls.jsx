@@ -71,20 +71,41 @@ export function DelayControls({
         </label>
       </div>
       
-      {/* Duration Input */}
+      {/* Duration Input with Counter Buttons */}
       <div className="delay-control-row">
         <label className="delay-input-label">
           Delay Duration (ms):
-          <input
-            type="number"
-            className="delay-input"
-            value={localConfig.duration}
-            onChange={handleDurationChange}
-            min="0"
-            max="10000"
-            step="100"
-            disabled={!localConfig.enabled}
-          />
+          <div className="delay-input-wrapper">
+            <button
+              type="button"
+              className="delay-input-btn delay-input-btn--minus"
+              onClick={() => handleChange('duration', Math.max(0, localConfig.duration - 500))}
+              disabled={!localConfig.enabled || localConfig.duration <= 0}
+              aria-label="Decrease delay by 500ms"
+            >
+              −
+            </button>
+            <input
+              type="number"
+              className="delay-input"
+              value={localConfig.duration}
+              onChange={handleDurationChange}
+              min="0"
+              max="10000"
+              step="500"
+              disabled={!localConfig.enabled}
+              readOnly
+            />
+            <button
+              type="button"
+              className="delay-input-btn delay-input-btn--plus"
+              onClick={() => handleChange('duration', Math.min(10000, localConfig.duration + 500))}
+              disabled={!localConfig.enabled || localConfig.duration >= 10000}
+              aria-label="Increase delay by 500ms"
+            >
+              +
+            </button>
+          </div>
         </label>
       </div>
       
