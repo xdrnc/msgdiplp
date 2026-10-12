@@ -13,7 +13,7 @@ A React application demonstrating progressive data loading: fast first paint wit
 - **Sticky Sidebar**: DelayControls and Pagination stay fixed during scroll.
 - **Artificial Delay Demo**: Configurable delays for Phase 1 and Phase 2 to visualize progressive loading behavior.
 
-## Quick Start
+## Quick Start (live: https://msgdiplp.vercel.app/)
 
 ```bash
 # Install dependencies
