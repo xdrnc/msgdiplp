@@ -77,6 +77,8 @@ function App() {
             onRetry={handleRetry}
             enrichmentProgress={enrichmentProgress}
             totalProducts={totalProducts}
+            currentPage={currentPage}
+            totalPages={totalPages}
           />
 
           <Pagination

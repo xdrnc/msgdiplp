@@ -1,10 +1,12 @@
 /**
  * ProductList - Grid container for product cards
  * Handles loading states, error states, and empty states
- * Shows skeleton loaders during Phase 1, enrichment progress during Phase 2
+ * Shows ProductCard skeletons during Phase 1, enrichment progress during Phase 2
  */
 
 import { ProductCard } from './ProductCard';
+
+const PRODUCTS_PER_PAGE = 16;
 
 export function ProductList({ 
   products, 
@@ -14,23 +16,32 @@ export function ProductList({
   errorPhase2,
   onRetry,
   enrichmentProgress,
-  totalProducts
+  totalProducts,
+  currentPage = 1,
+  totalPages = 1
 }) {
-  // Show skeleton loaders during Phase 1
+  // Calculate skeleton count based on known data
+  const getSkeletonCount = () => {
+    // If we have total from previous loads, calculate exact count for current page
+    if (totalProducts > 0 && totalPages > 0) {
+      const isLastPage = currentPage === totalPages;
+      if (isLastPage) {
+        const remainder = totalProducts % PRODUCTS_PER_PAGE;
+        return remainder > 0 ? remainder : PRODUCTS_PER_PAGE;
+      }
+    }
+    // Default to max per page (first load or unknown total)
+    return PRODUCTS_PER_PAGE;
+  };
+
+  // Show ProductCard skeletons during Phase 1
   if (isLoadingPhase1 && products.length === 0) {
+    const skeletonCount = getSkeletonCount();
     return (
       <div className="product-list" role="status" aria-label="Loading products">
-        <div className="product-list__skeletons">
-          {Array.from({ length: 16 }).map((_, i) => (
-            <div key={i} className="product-card product-card--skeleton">
-              <div className="product-card__image-wrapper">
-                <div className="skeleton skeleton--image"></div>
-              </div>
-              <div className="product-card__content">
-                <div className="skeleton skeleton--text skeleton--title"></div>
-                <div className="skeleton skeleton--text skeleton--price"></div>
-              </div>
-            </div>
+        <div className="product-list__grid">
+          {Array.from({ length: skeletonCount }).map((_, i) => (
+            <ProductCard key={`skeleton-${i}`} product={{}} isSkeleton={true} />
           ))}
         </div>
       </div>

@@ -76,10 +76,10 @@ export function useProgressiveProducts(initialPage = 1, delayConfig = {}) {
     const controller = new AbortController();
     abortControllerRef.current = controller;
     
-    // 4. Reset Phase 1 state, preserve products until new data arrives (prevents flicker)
+    // 4. Reset Phase 1 state, clear products to show skeleton during loading
     setIsLoadingPhase1(true);
     setErrorPhase1(null);
-    // Note: we DON'T clear products here - keeps previous page visible briefly
+    setProducts([]); // Clear products to show skeleton for new page
     
     // 5. Reset Phase 2 state
     setIsLoadingPhase2(false);
