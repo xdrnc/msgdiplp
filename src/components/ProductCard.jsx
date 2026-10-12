@@ -5,6 +5,31 @@
  * Supports skeleton state for Phase 1 loading and Phase 2 placeholders
  */
 
+// Reusable skeleton detail lines - used by both Phase 1 and Phase 2 skeletons
+const SKELETON_DETAIL_WIDTHS = ['60%', '40%', '50%', '80%'];
+
+function SkeletonDetails() {
+  return (
+    <div className="product-card__details product-card__details--skeleton">
+      {SKELETON_DETAIL_WIDTHS.map((width, i) => (
+        <div key={i} className="skeleton skeleton--text" style={{ width }}></div>
+      ))}
+    </div>
+  );
+}
+
+function SkeletonDetailItems() {
+  return (
+    <>
+      {SKELETON_DETAIL_WIDTHS.map((width, i) => (
+        <div key={i} className="product-card__detail product-card__detail--skeleton">
+          <span className="skeleton skeleton--text" style={{ width }}></span>
+        </div>
+      ))}
+    </>
+  );
+}
+
 export function ProductCard({ product, isSkeleton = false }) {
   // Skeleton rendering - matches exact layout of final card (Phase 1 loading)
   if (isSkeleton) {
@@ -23,13 +48,8 @@ export function ProductCard({ product, isSkeleton = false }) {
           <div className="skeleton skeleton--text skeleton--title"></div>
           <div className="skeleton skeleton--text skeleton--price"></div>
 
-          {/* Skeleton details section - matches Phase 2 layout */}
-          <div className="product-card__details product-card__details--skeleton">
-            <div className="skeleton skeleton--text" style={{ width: '60%' }}></div>
-            <div className="skeleton skeleton--text" style={{ width: '40%' }}></div>
-            <div className="skeleton skeleton--text" style={{ width: '50%' }}></div>
-            <div className="skeleton skeleton--text" style={{ width: '80%' }}></div>
-          </div>
+          {/* Skeleton details section - uses shared component */}
+          <SkeletonDetails />
         </div>
       </article>
     );
@@ -78,34 +98,34 @@ export function ProductCard({ product, isSkeleton = false }) {
         {/* Phase 2 fields - render skeleton placeholders when not enriched, real data when enriched */}
         <div className="product-card__details">
           {isEnriched ? (
-            // Enriched: show real data
+            // Enriched: show real data - always render 4 detail slots for consistent height
             <>
-              {rating !== undefined && (
-                <div className="product-card__detail">
-                  <span className="product-card__detail-label">Rating:</span>
-                  <span className="product-card__detail-value">
-                    {'★'.repeat(Math.round(rating))}{'☆'.repeat(5 - Math.round(rating))} {rating}/5
-                  </span>
-                </div>
-              )}
-              {stock !== undefined && (
-                <div className="product-card__detail">
-                  <span className="product-card__detail-label">Stock:</span>
-                  <span className="product-card__detail-value">{stock} left</span>
-                </div>
-              )}
-              {brand && (
-                <div className="product-card__detail">
-                  <span className="product-card__detail-label">Brand:</span>
-                  <span className="product-card__detail-value">{brand}</span>
-                </div>
-              )}
-              {category && (
-                <div className="product-card__detail">
-                  <span className="product-card__detail-label">Category:</span>
-                  <span className="product-card__detail-value">{category}</span>
-                </div>
-              )}
+              <div className="product-card__detail">
+                <span className="product-card__detail-label">Rating:</span>
+                <span className="product-card__detail-value">
+                  {rating !== undefined
+                    ? `${'★'.repeat(Math.round(rating))}${'☆'.repeat(5 - Math.round(rating))} ${rating}/5`
+                    : '—'}
+                </span>
+              </div>
+              <div className="product-card__detail">
+                <span className="product-card__detail-label">Stock:</span>
+                <span className="product-card__detail-value">
+                  {stock !== undefined ? `${stock} left` : '—'}
+                </span>
+              </div>
+              <div className="product-card__detail">
+                <span className="product-card__detail-label">Brand:</span>
+                <span className="product-card__detail-value">
+                  {brand || '—'}
+                </span>
+              </div>
+              <div className="product-card__detail">
+                <span className="product-card__detail-label">Category:</span>
+                <span className="product-card__detail-value">
+                  {category || '—'}
+                </span>
+              </div>
               {description && (
                 <p className="product-card__description">{description}</p>
               )}
@@ -113,20 +133,8 @@ export function ProductCard({ product, isSkeleton = false }) {
           ) : (
             // Not enriched yet: show skeleton placeholders for Phase 2 fields
             // Description skeleton removed to match Phase 1 skeleton height
-            <>
-              <div className="product-card__detail product-card__detail--skeleton">
-                <span className="skeleton skeleton--text" style={{ width: '60%' }}></span>
-              </div>
-              <div className="product-card__detail product-card__detail--skeleton">
-                <span className="skeleton skeleton--text" style={{ width: '40%' }}></span>
-              </div>
-              <div className="product-card__detail product-card__detail--skeleton">
-                <span className="skeleton skeleton--text" style={{ width: '50%' }}></span>
-              </div>
-              <div className="product-card__detail product-card__detail--skeleton">
-                <span className="skeleton skeleton--text" style={{ width: '80%' }}></span>
-              </div>
-            </>
+            // Uses shared SkeletonDetailItems component for consistency
+            <SkeletonDetailItems />
           )}
         </div>
       </div>
