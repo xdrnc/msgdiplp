@@ -63,7 +63,7 @@ function App() {
   return (
     <div className="app">
       <header className="app__header">
-        <h1>Product Listing</h1>
+        <h1 style={{ color: '#f9c5f1' }}>Product Listing</h1>
         <a href="https://github.com/xdrnc/msgdiplp">Alexander (github: xdrnc)</a>
       </header>
 
