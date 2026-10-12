@@ -10,6 +10,7 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
+import './DelayControls.css';
 
 /**
  * DelayControls component

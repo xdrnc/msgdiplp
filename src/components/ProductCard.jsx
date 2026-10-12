@@ -5,6 +5,8 @@
  * use IDENTICAL DOM structure and CSS classes - TRUE REUSABILITY
  */
 
+import './ProductCard.css';
+
 // Configuration for skeleton detail widths (shared across all skeleton states)
 const SKELETON_DETAIL_WIDTHS = ['60%', '40%', '50%', '80%'];
 

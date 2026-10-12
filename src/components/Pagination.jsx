@@ -3,7 +3,9 @@
  * Disabled during loading to prevent race conditions
  */
 
-export function Pagination({ 
+import './Pagination.css';
+
+export function Pagination({
   currentPage, 
   totalPages, 
   onPageChange, 

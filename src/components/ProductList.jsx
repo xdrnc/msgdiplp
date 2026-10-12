@@ -5,6 +5,7 @@
  */
 
 import { ProductCard } from './ProductCard';
+import './ProductList.css';
 
 const PRODUCTS_PER_PAGE = 16;
 
