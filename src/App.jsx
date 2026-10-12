@@ -30,6 +30,7 @@ function App() {
     errorPhase2,
     currentPage,
     totalPages,
+    totalItems,
     goToPage,
     nextPage,
     prevPage,
@@ -76,7 +77,7 @@ function App() {
             errorPhase2={errorPhase2}
             onRetry={handleRetry}
             enrichmentProgress={enrichmentProgress}
-            totalProducts={totalProducts}
+            totalItems={totalItems}
             currentPage={currentPage}
             totalPages={totalPages}
           />

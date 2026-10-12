@@ -38,6 +38,7 @@ export function useProgressiveProducts(initialPage = 1, delayConfig = {}) {
   const [errorPhase2, setErrorPhase2] = useState(null);
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0); // Total products across ALL pages (from API)
   
   // ============ REFS (mutable, NO re-render when changed) ============
   // pageVersion: increments on each navigation, used to discard stale responses
@@ -111,6 +112,7 @@ export function useProgressiveProducts(initialPage = 1, delayConfig = {}) {
       const phase1Products = phase1Data.products || [];
       setProducts(phase1Products);
       setTotalPages(Math.ceil((phase1Data.total || 0) / PRODUCTS_PER_PAGE));
+      setTotalItems(phase1Data.total || 0); // Store total across all pages for skeleton calculation
       setIsLoadingPhase1(false);
       
       // 8. Start Phase 2 enrichment (non-blocking, background)
@@ -233,6 +235,7 @@ export function useProgressiveProducts(initialPage = 1, delayConfig = {}) {
     // Pagination
     currentPage,
     totalPages,
+    totalItems, // Total products across ALL pages (from API)
     // Navigation
     goToPage,
     nextPage,
@@ -242,6 +245,6 @@ export function useProgressiveProducts(initialPage = 1, delayConfig = {}) {
     isLoading: isLoadingPhase1 || isLoadingPhase2,
     hasError: errorPhase1 || errorPhase2,
     enrichmentProgress: products.filter(p => p.isEnriched).length,
-    totalProducts: products.length,
+    totalProducts: products.length, // Current page product count (for backward compatibility)
   };
 }

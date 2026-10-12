@@ -8,25 +8,25 @@ import { ProductCard } from './ProductCard';
 
 const PRODUCTS_PER_PAGE = 16;
 
-export function ProductList({ 
-  products, 
-  isLoadingPhase1, 
-  isLoadingPhase2, 
-  errorPhase1, 
+export function ProductList({
+  products,
+  isLoadingPhase1,
+  isLoadingPhase2,
+  errorPhase1,
   errorPhase2,
   onRetry,
   enrichmentProgress,
-  totalProducts,
+  totalItems, // Total products across ALL pages (from API)
   currentPage = 1,
   totalPages = 1
 }) {
   // Calculate skeleton count based on known data
   const getSkeletonCount = () => {
     // If we have total from previous loads, calculate exact count for current page
-    if (totalProducts > 0 && totalPages > 0) {
+    if (totalItems > 0 && totalPages > 0) {
       const isLastPage = currentPage === totalPages;
       if (isLastPage) {
-        const remainder = totalProducts % PRODUCTS_PER_PAGE;
+        const remainder = totalItems % PRODUCTS_PER_PAGE;
         return remainder > 0 ? remainder : PRODUCTS_PER_PAGE;
       }
     }
