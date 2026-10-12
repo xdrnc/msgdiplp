@@ -81,13 +81,6 @@ function App() {
             currentPage={currentPage}
             totalPages={totalPages}
           />
-
-          <Pagination
-            currentPage={currentPage}
-            totalPages={totalPages}
-            onPageChange={goToPage}
-            disabled={false}
-          />
         </div>
         
         <aside className="app__sidebar">
@@ -96,6 +89,12 @@ function App() {
             onDelayConfigChange={handleDelayConfigChange}
             onRefresh={handleRefresh}
             isRefreshing={isRefreshing}
+          />
+          <Pagination
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onPageChange={goToPage}
+            disabled={false}
           />
         </aside>
       </main>

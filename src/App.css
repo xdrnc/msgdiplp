@@ -54,6 +54,11 @@
 .app__sidebar {
   width: 280px;
   flex-shrink: 0;
+  /* Make sidebar sticky so DelayControls and Pagination stay fixed during scroll */
+  position: sticky;
+  top: 2rem;
+  height: fit-content;
+  align-self: flex-start;
 }
 
 /* Global Button Base Styles */
