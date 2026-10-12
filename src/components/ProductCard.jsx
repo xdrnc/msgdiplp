@@ -2,7 +2,7 @@
  * ProductCard - Individual product tile component
  * Displays product info with progressive enrichment indicator
  * ZERO LAYOUT SHIFT: All states (Phase 1 skeleton, Phase 2 skeleton, final card)
- * use IDENTICAL DOM structure and CSS classes
+ * use IDENTICAL DOM structure and CSS classes - TRUE REUSABILITY
  */
 
 // Configuration for skeleton detail widths (shared across all skeleton states)
@@ -20,9 +20,9 @@ function ProductCardUnified({
   image,
   // Badge slot
   badge,
-  // Title slot (always h3 for semantics, skeleton uses div with same class)
+  // Title slot (always h3 for semantics)
   title,
-  // Price slot (always p for semantics, skeleton uses div with same class)
+  // Price slot (always p for semantics)
   price,
   // Details slot - always 4 items for consistent height
   details,
@@ -45,10 +45,10 @@ function ProductCardUnified({
       </div>
 
       <div className="product-card__content">
-        <div className="product-card__header">
-          {title}
-          {price}
-        </div>
+        {/* Title slot now includes the header wrapper */}
+        {title}
+        {/* Price slot is now null since it's inside the header */}
+        {price}
         <div className="product-card__details">
           {details}
         </div>
@@ -62,17 +62,17 @@ function ProductCardUnified({
 }
 
 /**
- * Creates a skeleton detail item - used by both Phase 1 and Phase 2 skeletons
- * Uses SAME CSS classes as real detail items
+ * Creates a skeleton detail item - uses SAME CSS classes as real detail items
+ * The skeleton is just a span INSIDE the same .product-card__detail-label/value elements
  */
 function SkeletonDetailItem({ width, index }) {
   return (
     <div className="product-card__detail" key={index}>
       <span className="product-card__detail-label">
-        <span className="skeleton skeleton--text" style={{ width: '50%' }}></span>
+        <span className="skeleton-text" style={{ width: '50%' }} />
       </span>
       <span className="product-card__detail-value">
-        <span className="skeleton skeleton--text" style={{ width }}></span>
+        <span className="skeleton-text" style={{ width }} />
       </span>
     </div>
   );
@@ -134,24 +134,29 @@ function buildDetails({ isEnriched, isSkeleton, rating, stock, brand, category }
 }
 
 export function ProductCard({ product, isSkeleton = false }) {
-  // Phase 1 Skeleton - uses SAME unified structure
+  // Phase 1 Skeleton - uses SAME unified structure with SAME CSS classes
   if (isSkeleton) {
     return (
       <ProductCardUnified
         isSkeleton={true}
         isEnriched={false}
-        image={<div className="product-card__image skeleton skeleton--image" />}
+        image={<div className="product-card__image skeleton-image" />}
         badge={
           <span className="product-card__badge product-card__badge--loading" title="Loading details...">
             ⟳ Loading
           </span>
         }
-        title={<h3 className="product-card__title skeleton skeleton--text"><span className="skeleton skeleton--title" /></h3>}
-        price={<p className="product-card__price skeleton skeleton--text"><span className="skeleton skeleton--price" /></p>}
+        title={
+          <div className="product-card__header skeleton-header">
+            <h3 className="product-card__title"><span className="skeleton-text skeleton-title" /></h3>
+            <p className="product-card__price"><span className="skeleton-text skeleton-price" /></p>
+          </div>
+        }
+        price={null}
         details={buildDetails({ isSkeleton: true })}
         description={
-          <div className="product-card__description skeleton skeleton--text">
-            <span className="skeleton skeleton--description" />
+          <div className="product-card__description">
+            <span className="skeleton-text skeleton-description" />
           </div>
         }
       />
@@ -193,8 +198,13 @@ export function ProductCard({ product, isSkeleton = false }) {
           ⟳ Loading
         </span>
       )}
-      title={<h3 className="product-card__title">{title}</h3>}
-      price={<p className="product-card__price">${price}</p>}
+      title={
+        <div className="product-card__header">
+          <h3 className="product-card__title">{title}</h3>
+          <p className="product-card__price">${price}</p>
+        </div>
+      }
+      price={null}
       details={buildDetails({ isEnriched, isSkeleton: false, rating, stock, brand, category })}
       description={
         isEnriched && description ? (
