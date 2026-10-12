@@ -29,7 +29,7 @@ export function Pagination({
         aria-label="Previous page"
         aria-disabled={disabled || isFirstPage}
       >
-        ← Previous
+        ←
       </button>
 
       <span className="pagination__page-info" aria-live="polite">
@@ -43,7 +43,7 @@ export function Pagination({
         aria-label="Next page"
         aria-disabled={disabled || isLastPage}
       >
-        Next →
+        →
       </button>
     </nav>
   );
