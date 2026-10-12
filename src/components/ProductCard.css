@@ -77,7 +77,7 @@
   display: grid;
   /* Fixed row heights - content CANNOT expand these */
   grid-template-rows:
-    4.1rem /* header (title 2.6rem + price 1.5rem) - FIXED not auto */
+    2.6rem /* header (title 2.6rem) - FIXED not auto */
     5rem /* details - fixed 4 lines */
     4.5rem /* description area - fixed 3 lines */
   ;
@@ -213,7 +213,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 0.5rem; /* Reduced gap for more compact layout */
-  height: 4.1rem; /* Match grid row height */
+  height: 2.6rem; /* Match grid row height */
 }
 
 /* Skeleton title - matches .product-card__title typography exactly */
