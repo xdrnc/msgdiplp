@@ -63,8 +63,11 @@ function App() {
   return (
     <div className="app">
       <header className="app__header">
-        <h1 style={{ color: '#f9c5f1' }}>Product Listing</h1>
-        <a href="https://github.com/xdrnc/msgdiplp">Alexander (github: xdrnc)</a>
+        <div className="app__header-left">
+          <img src="/alextest.jpg" alt="Logo" className="app__logo" />
+          <h1 style={{ color: '#fceefc' }}>Product Listing</h1>
+        </div>
+        <a href="https://github.com/xdrnc/msgdiplp" target="_blank" rel="noopener noreferrer" style={{ color: '#faf56b' }}>Alexander (github: xdrnc)</a>
       </header>
 
       <main className="app__main">
