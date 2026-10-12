@@ -30,6 +30,10 @@
   overflow: hidden;
   /* Fixed height - matches grid row */
   height: 280px;
+  /* Center the square wrapper horizontally within the grid cell */
+  margin: 0 auto;
+  /* Ensure it doesn't stretch beyond 280px */
+  max-width: 280px;
 }
 
 .product-card__image {
