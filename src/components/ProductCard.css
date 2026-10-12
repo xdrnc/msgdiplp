@@ -1,14 +1,14 @@
 /* ProductCard - TRUE Fixed-Size Box with CSS Grid */
 /* The box size is FIXED by CSS Grid row definitions. Nothing inside can change it. */
 .product-card {
-  background: white;
+  background: rgb(251, 251, 235);
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
   overflow: hidden;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
   /* FIXED HEIGHT - not min-height. Content is clipped if it overflows. */
   /* Image: 280px + Content: header(4.1rem=65.6px) + details(5rem=80px) + description(4.5rem=72px) + padding(2rem=32px) ≈ 530px */
-  height: 530px;
+  height: 500px;
   display: grid;
   grid-template-rows: 280px 1fr; /* Fixed image row + flexible content row */
 }
@@ -77,12 +77,12 @@
 
 /* Content area - FIXED HEIGHT ROW with internal CSS Grid */
 .product-card__content {
-  padding: 1rem;
+  padding: 0.3rem;
   display: grid;
   /* Fixed row heights - content CANNOT expand these */
   grid-template-rows:
-    2.6rem /* header (title 2.6rem) - FIXED not auto */
-    5rem /* details - fixed 4 lines */
+    2.3rem /* header (title 2.6rem) - FIXED not auto */
+    4.5rem /* details - fixed 4 lines */
     4.5rem /* description area - fixed 3 lines */
   ;
   height: 100%;
@@ -144,7 +144,7 @@
   align-items: center;
   padding: 0.375rem 0;
   font-size: 0.8125rem;
-  min-height: 1.25rem;
+  min-height: 1.1rem;
 }
 
 .product-card__detail-label {
@@ -159,8 +159,8 @@
 
 /* Description area - FIXED HEIGHT ROW (matches grid row: 4.5rem) */
 .product-card__description-area {
-  margin-top: 0.5rem; /* Reduced from 0.75rem for more compact layout */
-  padding-top: 0.75rem; /* Reduced from 1rem */
+  margin-top: 0.3rem; /* Reduced from 0.75rem for more compact layout */
+  padding-top: 0.25rem; /* Reduced from 1rem */
   border-top: 1px solid #f0f0f0;
   /* Fixed height - matches grid row */
   height: 4.5rem;
@@ -168,10 +168,9 @@
 }
 
 .product-card__description {
-  margin: 0;
   font-size: 0.8125rem;
   color: #555;
-  line-height: 1.5;
+  line-height: 1;
   display: -webkit-box;
   -webkit-line-clamp: 3;
   -webkit-box-orient: vertical;
