@@ -9,6 +9,8 @@ A React application demonstrating progressive data loading: fast first paint wit
 - **No Layout Shift**: Fixed aspect ratio images and preserved Phase 1 data ensure smooth UX.
 - **Independent Error States**: Phase 1 and Phase 2 errors handled separately.
 - **Modular Architecture**: Data layer separated from UI components for testability.
+- **Component-Scoped CSS**: Each component has its own CSS file for maintainability.
+- **Sticky Sidebar**: DelayControls and Pagination stay fixed during scroll.
 - **Artificial Delay Demo**: Configurable delays for Phase 1 and Phase 2 to visualize progressive loading behavior.
 
 ## Quick Start
@@ -27,60 +29,7 @@ npm test
 npm run build
 ```
 
-## Artificial Delay Demo
-
-The app includes a demo control panel (sidebar) to simulate network latency and visualize the two-phase loading behavior.
-
-### Controls
-
-| Control | Description |
-|---------|-------------|
-| **Enable Artificial Delay** | Master toggle - enables/disables all delays |
-| **Delay Duration (ms)** | Milliseconds to delay each affected phase (0-10000) |
-| **Phase 1 (Initial Load)** | Apply delay to Phase 1 fetch (blocks initial render) |
-| **Phase 2 (Enrichment)** | Apply delay to Phase 2 fetch (background enrichment) |
-| **Refresh Page** | Reload current page with current delay settings |
-
-### Use Cases
-
-- **Demo Phase 1 delay only**: See skeleton loaders while waiting for initial data
-- **Demo Phase 2 delay only**: See enrichment progress bar while products enrich
-- **Demo both**: Full progressive loading experience with visible delays
-- **Refresh button**: Re-fetch current page without changing page number (useful for testing)
-
-### Implementation
-
-The delay logic lives in `src/lib/delay.js` and is applied in `useProgressiveProducts` hook:
-
-```javascript
-// src/lib/delay.js
-export function delayWithAbort(ms, signal) {
-  return new Promise((resolve, reject) => {
-    const timeoutId = setTimeout(resolve, ms);
-    if (signal) {
-      signal.addEventListener('abort', () => {
-        clearTimeout(timeoutId);
-        reject(new DOMException('Aborted', 'AbortError'));
-      }, { once: true });
-    }
-  });
-}
-
-// In useProgressiveProducts - applied after fetch, before version guard
-if (delayConfigRef.current.enabled && delayConfigRef.current.phase1) {
-  await delayWithAbort(delayConfigRef.current.duration, controller.signal);
-}
-```
-
-**Key design decisions:**
-- Delay applied **after fetch, before version guard** - simulates network latency without affecting race condition logic
-- Uses `delayWithAbort` with the same `AbortSignal` - delays are cancelled when user navigates away
-- Config stored in `useRef` - updates don't trigger re-renders, but are read at fetch time
-- Default config: 1000ms delay, both phases enabled
-
-## Architecture
-
-### Project Structure
+## Project Structure
 
 ```
 src/
@@ -95,43 +44,16 @@ src/
 │   └── useProgressiveProducts.js # Two-phase orchestration hook
 ├── components/
 │   ├── ProductCard.jsx     # Individual product tile
+│   ├── ProductCard.css     # ProductCard styles
 │   ├── ProductList.jsx     # Grid with loading/error states
-│   └── Pagination.jsx      # Next/Previous navigation
+│   ├── ProductList.css     # ProductList styles
+│   ├── Pagination.jsx      # Next/Previous navigation
+│   ├── Pagination.css      # Pagination styles
+│   ├── DelayControls.jsx   # Artificial delay controls
+│   └── DelayControls.css   # DelayControls styles
 ├── App.jsx                 # Main app integration
-├── App.css                 # Styles
+├── App.css                 # Global layout styles
 └── main.jsx                # Entry point
-```
-
-### Data Flow
-
-```
-User Navigation
-      │
-      ▼
-┌─────────────────────────────────────┐
-│  useProgressiveProducts Hook        │
-│  (Orchestrates everything)          │
-└──────────────┬──────────────────────┘
-               │
-     ┌─────────┴─────────┐
-     ▼                   ▼
-Phase 1              Phase 2
-(fetchClient)        (fetchClient)
-     │                   │
-     ▼                   ▼
-┌─────────────────────────────────────┐
-│     mergeProducts (pure)            │
-│  Merges by ID, adds isEnriched      │
-└──────────────┬──────────────────────┘
-               │
-               ▼
-      setProducts(merged)
-               │
-               ▼
-      ProductList Component
-               │
-               ▼
-      ProductCard Components
 ```
 
 ## Two-Phase Orchestration
@@ -160,7 +82,6 @@ GET /products?limit=16&skip=0
 ```
 
 ### Merge Logic (Pure Function)
-
 ```javascript
 // src/lib/mergeProducts.js
 function mergeProducts(phase1Products, phase2Products) {
@@ -205,7 +126,6 @@ Without protection:
 ```
 
 ### Implementation
-
 ```javascript
 // In useProgressiveProducts hook
 const pageVersionRef = useRef(0);
@@ -255,27 +175,6 @@ const startPhase2Enrichment = async (page, version, phase1Products) => {
 };
 ```
 
-### Timeline Example
-
-```
-User: Page 1 → Page 2 → Page 3 (rapid clicks)
-
-pageVersionRef:  0 → 1 → 2 → 3
-
-Page 1 Phase 1 starts    │ version=1
-Page 2 Phase 1 starts    │ version=2 (cancels Page 1)
-Page 3 Phase 1 starts    │ version=3 (cancels Page 2)
-
-Page 1 Phase 1 responds  │ checks: 1 !== 3 → DISCARD
-Page 2 Phase 1 responds  │ checks: 2 !== 3 → DISCARD
-Page 3 Phase 1 responds  │ checks: 3 === 3 → APPLY ✓
-
-Page 3 Phase 2 starts    │ version=3
-Page 1 Phase 2 responds  │ checks: 1 !== 3 → DISCARD
-Page 2 Phase 2 responds  │ checks: 2 !== 3 → DISCARD
-Page 3 Phase 2 responds  │ checks: 3 === 3 → MERGE ✓
-```
-
 ## State Model
 
 ```javascript
@@ -307,78 +206,6 @@ Page 3 Phase 2 responds  │ checks: 3 === 3 → MERGE ✓
 | **AbortController** | Per-request + external signal | Composable cancellation |
 | **Page Version** | Simple counter | Lightweight; no external dependencies |
 | **Type System** | JSDoc | No build step; IDE support in VS Code |
-
-## API Reference
-
-### `useProgressiveProducts(initialPage?, delayConfig?)`
-Custom hook for progressive loading.
-
-**Parameters:**
-- `initialPage` (number, default: 1) - Starting page (1-based)
-- `delayConfig` (Object, optional) - Artificial delay configuration for demo
-  - `enabled` (boolean, default: false) - Master toggle for all delays
-  - `duration` (number, default: 1000) - Delay duration in milliseconds
-  - `phase1` (boolean, default: true) - Enable delay for Phase 1
-  - `phase2` (boolean, default: true) - Enable delay for Phase 2
-
-**Returns:**
-- `products` - Array of merged products
-- `isLoadingPhase1` - Boolean
-- `isLoadingPhase2` - Boolean
-- `errorPhase1` - String | null
-- `errorPhase2` - String | null
-- `currentPage` - Number
-- `totalPages` - Number
-- `goToPage(page)` - Navigate to page
-- `nextPage()` - Next page
-- `prevPage()` - Previous page
-- `refresh()` - Reload current page with current delay settings
-- `enrichmentProgress` - Number of enriched items
-- `totalProducts` - Products on current page
-
-### `createFetchClient(baseUrl?)`
-Factory for fetch client with cancellation.
-
-**Returns:**
-- `get(endpoint, options)` - GET request
-- `createAbortController()` - Create controller
-
-### `mergeProducts(phase1, phase2)`
-Pure merge function. Returns merged array with `isEnriched` flags.
-
-### Delay Utilities (`src/lib/delay.js`)
-
-#### `delay(ms)`
-Simple delay promise.
-```javascript
-await delay(1000); // Wait 1 second
-```
-
-#### `delayWithAbort(ms, signal)`
-Delay promise that respects AbortSignal for cancellation.
-```javascript
-const controller = new AbortController();
-await delayWithAbort(1000, controller.signal);
-// If controller.abort() called, rejects with AbortError
-```
-
-#### `normalizeDelayConfig(config)`
-Validates and normalizes delay configuration with defaults.
-```javascript
-normalizeDelayConfig({ enabled: true, duration: 500 });
-// Returns: { enabled: true, duration: 500, phase1: true, phase2: true }
-```
-
-#### `defaultDelayConfig`
-Default configuration object:
-```javascript
-{
-  enabled: false,
-  duration: 1000,
-  phase1: true,
-  phase2: true,
-}
-```
 
 ## Testing
 
