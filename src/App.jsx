@@ -63,7 +63,7 @@ function App() {
     <div className="app">
       <header className="app__header">
         <h1>Product Listing</h1>
-        <p className="app__subtitle">Progressive loading: fast first paint, then enrichment</p>
+        <a href="https://github.com/xdrnc/msgdiplp">Alexander (github: xdrnc)</a>
       </header>
 
       <main className="app__main">
