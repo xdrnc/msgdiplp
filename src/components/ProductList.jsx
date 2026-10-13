@@ -66,24 +66,6 @@ export function ProductList({
 
   return (
     <div className="product-list">
-      {/* Enrichment progress indicator alextest
-      {(isLoadingPhase2 || enrichmentProgress > 0) && (
-        <div className="product-list__enrichment-progress" role="status" aria-live="polite">
-          <div className="enrichment-bar">
-            <div 
-              className="enrichment-bar__fill" 
-              style={{ width: totalProducts > 0 ? `${(enrichmentProgress / totalProducts) * 100}%` : '0%' }}
-            ></div>
-          </div>
-          <span className="enrichment-text">
-            {isLoadingPhase2 
-              ? `Loading details... ${enrichmentProgress}/${totalProducts} complete`
-              : `All ${totalProducts} products enriched`
-            }
-          </span>
-        </div>
-      )}
-*/}
       {/* Phase 2 error (non-blocking - products still visible) */}
       {errorPhase2 && !isLoadingPhase2 && (
         <div className="product-list__phase2-error" role="alert">
