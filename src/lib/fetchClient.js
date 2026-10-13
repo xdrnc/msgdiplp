@@ -39,13 +39,16 @@ export function createFetchClient(baseUrl = BASE_URL) {
     
     // If caller provided an external signal, link it to our controller
     // This allows: caller aborts → our request aborts
+    // Store handler reference so we can remove it later (same function object)
+    const abortHandler = () => controller.abort();
+    
     if (signal) {
       // If already aborted, abort immediately
       if (signal.aborted) {
         controller.abort();
       } else {
         // Listen for external abort
-        signal.addEventListener('abort', () => controller.abort(), { once: true });
+        signal.addEventListener('abort', abortHandler, { once: true });
       }
     }
     
@@ -78,8 +81,9 @@ export function createFetchClient(baseUrl = BASE_URL) {
       
     } finally {
       // Clean up event listener to prevent memory leaks
+      // Use the SAME function reference that was added
       if (signal) {
-        signal.removeEventListener('abort', () => controller.abort());
+        signal.removeEventListener('abort', abortHandler);
       }
     }
   }
