@@ -41,9 +41,10 @@ function App() {
 
   // Retry handler - reloads current page
   const handleRetry = useCallback(() => {
-    // Trigger reload by going to same page (hook handles cancellation)
-    goToPage(currentPage);
-  }, [currentPage, goToPage]);
+    // Use refresh() which directly calls loadPage() without depending on state change
+    // goToPage(currentPage) would bail out because React skips identical state values
+    refresh();
+  }, [refresh]);
   
   // Refresh handler for delay controls
   const handleRefresh = useCallback(() => {
